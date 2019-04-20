@@ -15,6 +15,7 @@ void get_date(int* day, int* month, int*year);
 void afficher_mois(GtkWidget** widgets,int mois,int annee,GtkWidget*);
 void on_precedent_clicked(GtkWidget* w, gpointer data);
 void on_suivant_clicked(GtkWidget* w, gpointer data);
+void on_aujourdhui_clicked(GtkWidget* w,gpointer data);
 
 int main (int argc, char **argv)
 {
@@ -35,6 +36,7 @@ int main (int argc, char **argv)
     GtkWidget* bprec = NULL;
     GtkWidget* bsuiv = NULL;
     GtkWidget* table = NULL;
+    GtkWidget* bjour = NULL;
 
     GtkWidget** widgets = NULL;
 
@@ -61,7 +63,7 @@ int main (int argc, char **argv)
     gtk_label_set_justify(bprec,GTK_JUSTIFY_CENTER);
     bsuiv = gtk_button_new_with_label("Suivant");
     gtk_label_set_justify(bprec,GTK_JUSTIFY_CENTER);
-    table = gtk_table_new(7,7, TRUE);
+    table = gtk_table_new(8,7, TRUE);
 
 
 
@@ -93,6 +95,10 @@ int main (int argc, char **argv)
 
     }
 
+    bjour = gtk_button_new_with_label("Aujourd'hui");
+    gtk_label_set_justify(bjour,GTK_JUSTIFY_CENTER);
+   gtk_table_attach_defaults(GTK_TABLE(table),bjour,2,5,7,8);
+
     d->widgets=widgets;
     d->label_mois=mois;
     d->bprec=bprec;
@@ -111,6 +117,8 @@ int main (int argc, char **argv)
     int currentMois = 4;
     g_signal_connect(G_OBJECT(bprec),"clicked",G_CALLBACK(on_precedent_clicked),d);
     g_signal_connect(G_OBJECT(bsuiv),"clicked",G_CALLBACK(on_suivant_clicked),d);
+
+    g_signal_connect(G_OBJECT(bjour),"clicked",G_CALLBACK(on_aujourdhui_clicked),d);
     gtk_main();
 
  return 0;
@@ -118,6 +126,8 @@ int main (int argc, char **argv)
 
 
 void afficher_mois(GtkWidget** widgets,int mois,int annee,GtkWidget* label_mois){
+    int jact, moisact, anneeact;
+    get_date(&jact,&moisact,&anneeact);
     gchar* tab_mois[]={"Janvier","Fevrier","Mars","Avril","Mai","Juin","Juillet","Août","Semptembre","Octobre","Novembre","Decembre"};
     int offset = get_offset(mois,annee);
     int dernier_jour = daysInMonth[mois - 1];
@@ -135,6 +145,16 @@ void afficher_mois(GtkWidget** widgets,int mois,int annee,GtkWidget* label_mois)
     for(i = firstDayOfMonth;i <= dernier_jour; i++){
         g_sprintf(tab,"%d",i);
         gtk_label_set_label(widgets[col] ,tab);
+        if (i == jact && mois == moisact && annee == anneeact){
+            GdkColor color;
+            gdk_color_parse("red",&color);
+            gtk_widget_modify_fg(widgets[col],GTK_STATE_NORMAL,&color);
+        }
+        else{
+            GdkColor color;
+            gdk_color_parse("black",&color);
+            gtk_widget_modify_fg(widgets[col],GTK_STATE_NORMAL,&color);
+        }
         col++;
     }
 
@@ -171,8 +191,10 @@ void on_suivant_clicked(GtkWidget* w, gpointer data){
     Donnee* donnes = (Donnee*)data;
      donnes->mois++;
     if(donnes->mois == 12){
-        gtk_widget_set_sensitive(w,FALSE);
-
+    gtk_widget_set_sensitive(w,FALSE);
+       /*donnes->annee++;
+       donnes->mois=1;
+        afficher_mois(donnes->widgets,donnes->mois,donnes->annee,donnes->label_mois);*/
 
     }
     gtk_widget_set_sensitive(donnes->bprec,TRUE);
@@ -181,6 +203,17 @@ void on_suivant_clicked(GtkWidget* w, gpointer data){
     afficher_mois(donnes->widgets,donnes->mois,donnes->annee,donnes->label_mois);
 
     }
+
+void on_aujourdhui_clicked(GtkWidget* w,gpointer data){
+    Donnee* donnes = (Donnee*)data;
+    int day,month,year;
+    get_date(&day,&month,&year);
+    donnes->mois = month;
+    donnes->annee = year;
+    afficher_mois(donnes->widgets,donnes->mois,donnes->annee,donnes->label_mois);
+
+}
+
 
 
 
