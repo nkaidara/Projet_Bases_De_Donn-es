@@ -40,6 +40,58 @@ int main (int argc, char **argv)
 
     GtkWidget** widgets = NULL;
 
+
+    /**CREATION DU MENU**/
+    GtkWidget* menubar = NULL;
+    GtkWidget* menu_event = NULL;
+    GtkWidget* menu_cal = NULL;
+    GtkWidget* pMenuItem = NULL;
+    GtkWidget *pVBox;
+
+    pVBox = gtk_vbox_new(FALSE,0);
+
+    gtk_container_add(GTK_CONTAINER(fenetre),table);
+
+
+    menubar = gtk_menu_bar_new();
+
+    menu_event = gtk_menu_new();
+
+    menu_cal = gtk_menu_new();
+
+    pMenuItem = gtk_menu_item_new();
+        /*******creation du menu évènement********/
+
+    pMenuItem = gtk_menu_item_new_with_label("Ajouter un évènement");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu_event),pMenuItem);
+
+
+    pMenuItem = gtk_menu_item_new_with_label("rechercher un évènement");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu_event),pMenuItem);
+
+    pMenuItem = gtk_menu_item_new_with_label("Evènement");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(pMenuItem),menu_event);
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar),pMenuItem);
+
+    /*******creation du menu évènement********/
+
+    pMenuItem = gtk_menu_item_new_with_label("Aller à");
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu_cal),pMenuItem);
+
+    pMenuItem = gtk_menu_item_new_with_label("Calendrier");
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(pMenuItem),menu_cal);
+
+    gtk_menu_shell_append(GTK_MENU_SHELL(menubar),pMenuItem);
+
+
+    gtk_box_pack_start(GTK_BOX(pVBox),menubar,FALSE,FALSE,10);
+
+/***************************************************************/
+
+
+
+
     lundi = gtk_label_new("Lundi");
     gtk_label_set_justify(lundi, GTK_JUSTIFY_CENTER);
     mardi = gtk_label_new("Mardi");
@@ -105,9 +157,10 @@ int main (int argc, char **argv)
     d->bsuiv=bsuiv;
 
 
-    gtk_container_add(GTK_CONTAINER(fenetre), table);
-    gtk_window_set_default_size(GTK_WINDOW(fenetre),900,300);
+    gtk_box_pack_start(GTK_BOX(pVBox),table,FALSE,FALSE,0);
+    gtk_container_add(GTK_CONTAINER(fenetre),pVBox);
 
+    gtk_window_set_default_size(GTK_WINDOW(fenetre),900,300);
 
     gtk_window_set_title(GTK_WINDOW(fenetre),"calendrier");
     gtk_widget_show_all(fenetre);
